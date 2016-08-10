@@ -58,9 +58,9 @@ void loop() {
 
 void munitionsSetup() {
   clawServo.attach(servoPin);
-  clawServo.write(90);
+  clawServo.write(140);
   delay(5000);
-  clawServo.write(0);
+  clawServo.write(170);
   delay(5000);
   clawServo.detach();
 }
@@ -69,7 +69,7 @@ void munitionsDrop() {
   digitalWrite(relayPin, HIGH);
   delay(2500);
   clawServo.attach(servoPin);
-  clawServo.write(180);
+  clawServo.write(45);
   delay(5000);
   clawServo.detach();
 
