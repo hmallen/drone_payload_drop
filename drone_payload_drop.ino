@@ -1,3 +1,13 @@
+/*
+ * Drone Payload Drop
+ * 
+ * TO DO:
+ * - Check servo write values for proper direction of movement
+ * - Test relay & voltage output
+ * - Setup Arduino for power on drone PDB
+ * - Install hardware on drone
+ */
+
 #include <Servo.h>
 
 Servo clawServo;
