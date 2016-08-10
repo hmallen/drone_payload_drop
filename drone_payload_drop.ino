@@ -15,12 +15,7 @@ void setup() {
 
   Serial.begin(9600);
 
-  clawServo.attach(servoPin);
-  clawServo.write(90);
-  delay(5000);
-  clawServo.write(0);
-  delay(5000);
-  clawServo.detach();
+  munitionsSetup();
 
   digitalWrite(ledPin, LOW);
 }
@@ -49,6 +44,15 @@ void loop() {
     digitalWrite(ledPin, HIGH);
     munitionsDrop();
   }
+}
+
+void munitionsSetup() {
+  clawServo.attach(servoPin);
+  clawServo.write(90);
+  delay(5000);
+  clawServo.write(0);
+  delay(5000);
+  clawServo.detach();
 }
 
 void munitionsDrop() {
