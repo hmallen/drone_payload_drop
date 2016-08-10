@@ -33,11 +33,15 @@ void loop() {
 
   for (unsigned long startTime = millis(); (millis() - startTime) < 2000; ) {
     buzzPwrVal = analogRead(buzzPwr);
+    delay(15);
     buzzGndVal = analogRead(buzzGnd);
+    delay(15);
     buzzVal = buzzPwrVal - buzzGndVal;
 
     loopTotal += buzzVal;
     loopCount++;
+
+    delay(20);
   }
   buzzLoopAvg = loopTotal / loopCount;
 
