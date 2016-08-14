@@ -1,12 +1,11 @@
 /*
- * Drone Payload Drop
- * 
- * TO DO:
- * - Check servo write values for proper direction of movement
- * - Test relay & voltage output
- * - Setup Arduino for power on drone PDB
- * - Install hardware on drone
- */
+   Drone Payload Drop
+
+   TO DO:
+   - Test relay & voltage output
+   - Setup Arduino for power on drone PDB
+   - Install hardware on drone
+*/
 
 #include <Servo.h>
 
@@ -25,7 +24,11 @@ void setup() {
 
   Serial.begin(9600);
 
+  delay(10000);
+
+  Serial.print("Load munitions...");
   munitionsSetup();
+  Serial.println("secured.");
 
   digitalWrite(ledPin, LOW);
 }
@@ -38,17 +41,18 @@ void loop() {
 
   for (unsigned long startTime = millis(); (millis() - startTime) < 2000; ) {
     buzzPwrVal = analogRead(buzzPwr);
-    delay(15);
     buzzGndVal = analogRead(buzzGnd);
-    delay(15);
     buzzVal = buzzPwrVal - buzzGndVal;
 
     loopTotal += buzzVal;
     loopCount++;
 
-    delay(20);
+    delay(50);
   }
   buzzLoopAvg = loopTotal / loopCount;
+
+  Serial.print("FC Input: ");
+  Serial.println(buzzLoopAvg);
 
   if (buzzLoopAvg > 500) {
     digitalWrite(ledPin, HIGH);
@@ -61,16 +65,17 @@ void munitionsSetup() {
   clawServo.write(140);
   delay(5000);
   clawServo.write(170);
-  delay(5000);
+  delay(2000);
   clawServo.detach();
 }
 
 void munitionsDrop() {
+  Serial.println("Dropping munitions!");
   digitalWrite(relayPin, HIGH);
-  delay(2500);
+  // delay(4000);  // Allow time for fuse ignition
   clawServo.attach(servoPin);
-  clawServo.write(45);
-  delay(5000);
+  clawServo.write(120); // Close to maximum opened travel range for claw
+  delay(2000);
   clawServo.detach();
 
   while (true) {
@@ -80,4 +85,3 @@ void munitionsDrop() {
     delay(500);
   }
 }
-
