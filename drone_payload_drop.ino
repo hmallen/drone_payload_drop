@@ -11,15 +11,21 @@
 
 Servo clawServo;
 
-const int relayPin = 2;
+const int primaryRelayPin = 2;
+const int secondaryRelayGround = 3;
+const int secondaryRelayPin = 4;
 const int servoPin = 9;
 const int ledPin = 13;
 
 const int buzzPwr = A0;
 const int buzzGnd = A1;
 
+int triggerVal = 0;
+
 void setup() {
-  pinMode(relayPin, OUTPUT); digitalWrite(relayPin, LOW);
+  pinMode(primaryRelayPin, OUTPUT); digitalWrite(primaryRelayPin, LOW);
+  pinMode(secondaryRelayGround, OUTPUT); digitalWrite(secondaryRelayGround, LOW);
+  pinMode(secondaryRelayPin, OUTPUT); digitalWrite(secondaryRelayPin, LOW);
   pinMode(ledPin, OUTPUT); digitalWrite(ledPin, HIGH);
 
   Serial.begin(9600);
@@ -34,6 +40,42 @@ void setup() {
 }
 
 void loop() {
+  while (true) {
+    triggerVal = triggerCheck();
+
+    if (triggerVal > 500) {
+      digitalWrite(ledPin, HIGH);
+      munitionsDrop();
+      break;
+    }
+  }
+
+  for (int breakCount = 0; breakCount < 3; ) {
+    triggerVal = triggerCheck();
+    if (triggerVal < 500) breakCount++;
+  }
+  digitalWrite(ledPin, LOW);
+
+  while (true) {
+    triggerVal = triggerCheck();
+
+    if (triggerVal > 500) {
+      digitalWrite(ledPin, HIGH);
+      munitionsLaunch();
+      digitalWrite(ledPin, LOW);
+      break;
+    }
+  }
+
+  while (true) {
+    digitalWrite(ledPin, LOW);
+    delay(500);
+    digitalWrite(ledPin, HIGH);
+    delay(500);
+  }
+}
+
+int triggerCheck() {
   int buzzPwrVal, buzzGndVal;
   int buzzVal, buzzLoopAvg;
   int loopTotal = 0;
@@ -54,10 +96,7 @@ void loop() {
   Serial.print("FC Input: ");
   Serial.println(buzzLoopAvg);
 
-  if (buzzLoopAvg > 500) {
-    digitalWrite(ledPin, HIGH);
-    munitionsDrop();
-  }
+  return buzzLoopAvg;
 }
 
 void munitionsSetup() {
@@ -71,17 +110,20 @@ void munitionsSetup() {
 
 void munitionsDrop() {
   Serial.println("Dropping munitions!");
-  digitalWrite(relayPin, HIGH);
+  digitalWrite(secondaryRelayPin, HIGH);
   // delay(4000);  // Allow time for fuse ignition
   clawServo.attach(servoPin);
   clawServo.write(120); // Close to maximum opened travel range for claw
   delay(2000);
   clawServo.detach();
-
-  while (true) {
-    digitalWrite(ledPin, LOW);
-    delay(500);
-    digitalWrite(ledPin, HIGH);
-    delay(500);
-  }
+  delay(3000);
+  digitalWrite(secondaryRelayPin, LOW);
 }
+
+void munitionsLaunch() {
+  Serial.println("Launching munitions!");
+  digitalWrite(primaryRelayPin, HIGH);
+  delay(5000);
+  digitalWrite(primaryRelayPin, LOW);
+}
+
